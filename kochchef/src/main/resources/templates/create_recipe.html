@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <title>Create Recipe</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var ingredients = /*[[${ingredients}]]*/ [];
+        var formChanged = false;
+
+        function addIngredient() {
+            var ingredientsDiv = document.getElementById('ingredients');
+            var lastChild = ingredientsDiv.lastElementChild;
+
+            if (lastChild && lastChild.nodeName === "DIV") {
+                var lastIngredient = lastChild.querySelector('input[name*="ingredientName"]')
+                var lastQuantity = lastChild.querySelector('input[name*="quantity"]');
+                var lastUnit = lastChild.querySelector('select[name*="unit"]');
+
+                if (!lastQuantity.value || !lastUnit.value || !lastIngredient.value || !ingredients.some(ing => ing.name === lastIngredient.value)) {
+                    alert('Bitte geben Sie eine Menge, eine Einheit und einen gültigen Namen für jede Zutat an.');
+                    return;
+                }
+            }
+
+            var index = ingredientsDiv.children.length;
+            var ingredientOptions = ingredients.map(ingredient =>
+                `<option value="${ingredient.name}">${ingredient.name}</option>`
+            ).join('');
+            var unitOptions = `
+                <option value="G">G</option>
+                <option value="Mg">Mg</option>
+                <option value="Ml">Ml</option>
+                <option value="L">L</option>
+                <option value="Kg">Kg</option>
+                <option value="Prise">Prise</option>
+                <option value="Cup">Cup</option>
+            `;
+            var newIngredient = document.createElement('div');
+            newIngredient.innerHTML = `
+                <label for="ingredients${index}.ingredientName">Ingredient:</label>
+                <input list="ingredientOptions-${index}" class="input input-bordered input-accent bg-gray-700 text-gray-200" name="ingredients[${index}].ingredientName" required placeholder="Zutat einfügen" />
+                <datalist id="ingredientOptions-${index}">
+                    ${ingredientOptions}
+                </datalist>
+                <label for="ingredients${index}.quantity">Quantity:</label>
+                <input type="number" step="1" min="1" class="input input-bordered input-accent bg-gray-700 text-gray-200" name="ingredients[${index}].quantity" required placeholder="0"/>
+                <label for="ingredients${index}.unit">Unit:</label>
+                <select class="select select-accent bg-gray-700 text-gray-200" name="ingredients[${index}].unit" required>
+                    ${unitOptions}
+                </select>
+                <button type="button" class="btn btn-error" onclick="removeElement(this)">Remove</button>
+            `;
+            ingredientsDiv.appendChild(newIngredient);
+        }
+
+        function removeElement(button) {
+            button.parentElement.remove();
+        }
+
+        function validateForm() {
+            var ingredientsDiv = document.getElementById('ingredients');
+            var ingredientDivs = ingredientsDiv.getElementsByTagName('div');
+            if (ingredientDivs.length === 0) {
+                alert('Bitte fügen Sie mindestens eine Zutat hinzu.');
+                return false;
+            }
+
+            for (var i = 0; i < ingredientDivs.length; i++) {
+                var quantity = ingredientDivs[i].querySelector('input[name*="quantity"]');
+                var unit = ingredientDivs[i].querySelector('select[name*="unit"]');
+                var ingredient = ingredientDivs[i].querySelector('input[name*="ingredientName"]');
+                if (!quantity.value || !unit.value || !ingredient.value || !ingredients.some(ing => ing.name === ingredient.value)) {
+                    alert('Bitte geben Sie eine Menge, eine Einheit und einen gültigen Namen für jede Zutat an.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add the first ingredient input field when the page loads
+            addIngredient();
+
+            document.getElementById('category').value = '';
+            document.getElementById('servings').value = '';
+            document.getElementById('preparationTime').value = '';
+        });
+
+        function updateCharCount() {
+            const currentLength = document.getElementById('steps').value.length;
+            document.getElementById('charCounter').textContent = `${currentLength} / 3000`;
+        }
+
+        function documentChanged() {
+            formChanged = true;
+        }
+
+        function confirmLeave() {
+            if (formChanged) {
+                return confirm("Do you really want to leave? All changes will be lost.");
+            }
+            return true;
+        }
+
+        function confirmSave() {
+            if (validateForm()) {
+                return confirm("Do you really want to continue? All changes will be saved.");
+            }
+            return true;
+        }
+        /*]]>*/
+    </script>
+    <style>
+        .counter {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .textarea-container {
+            position: relative;
+        }
+        .counter-container {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.875rem; /* text-sm */
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 p-8">
+<div class="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg relative">
+    <a th:href="@{/main(categoryFilterPar=${categoryFilterPar}, pageSize=${pageSize})}" onclick="return confirmLeave()" class="btn btn-error absolute top-4 left-4">Back</a>
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-100">Rezept erstellen</h1>
+    <form th:action="@{/save_recipe}" th:object="${recipe}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <input type="hidden" name="creatorEmail" th:value="${creator.email}" />
+        <div class="mb-4">
+            <label for="title" class="block text-sm font-medium text-gray-200 mb-2">Name:</label>
+            <input placeholder="Gib einen Rezeptnamen ein" class="input input-bordered input-accent w-full bg-gray-700 text-gray-200" type="text" minlength="3" maxlength="60" id="title" th:field="*{name}" required onchange="documentChanged()"/>
+        </div>
+        <div class="mb-4">
+            <label for="category" class="block text-sm font-medium text-gray-200 mb-2">Kategorie:</label>
+            <select class="select select-accent w-full bg-gray-700 text-gray-200" id="category" th:field="*{category}" required onchange="documentChanged()">
+                <option value="" disabled selected>Wähle eine Kategorie aus</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2" for="servings">Portionen:</label>
+            <input class="input input-bordered w-full bg-gray-700 text-gray-200" type="number" step="1" min="1" max="12" id="servings" th:field="*{servings}" required placeholder="0" onchange="documentChanged()"/>
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2" for="preparationTime">Zubereitungszeit (in minuten):</label>
+            <input class="input input-bordered w-full bg-gray-700 text-gray-200" type="number" step="1" min="1" id="preparationTime" th:field="*{duration}" required placeholder="0" onchange="documentChanged()"/>
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2" for="image">Bild hochladen:</label>
+            <input class="file-input file-input-bordered w-full bg-gray-700 text-gray-200" type="file" id="image" name="image" required onchange="documentChanged()"/>
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-200 mb-2" for="steps">Rezeptschritte:</label>
+            <div class="textarea-container">
+                <textarea class="textarea textarea-accent w-full bg-gray-700 text-gray-200" id="steps" minlength="150" maxlength="3000" th:field="*{steps}" rows="10" required placeholder="Füge Rezeptschritte hinzu" onchange="documentChanged()" oninput="updateCharCount()"></textarea>
+                <div class="counter-container">
+                    <span id="charCounter">0 / 3000</span>
+                </div>
+            </div>
+        </div>
+        <div class="mb-8" id="ingredients">
+            <label class="block text-sm font-medium text-gray-200 mb-2">Zutaten:</label>
+            <button type="button" class="btn btn-primary mb-4" onclick="addIngredient()">Zutaten hinzufügen</button>
+        </div>
+        <div class="flex justify-center">
+            <button class="btn btn-success" type="submit" onclick="confirmSave()">Speichern</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kochchef</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="../static/main.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="primary-content">
+<div class="flex justify-between p-4">
+    <nav>
+        <ul class="flex space-x-4">
+            <li th:if="${userPrincipal == null}">
+                <a href="/protected" class="btn btn-primary">Login</a>
+            </li>
+            <li th:if="${userPrincipal == null}">
+                <a href="/registration" class="btn btn-secondary">Registrierung</a>
+            </li>
+            <li th:if="${userPrincipal != null}">
+                <form action="/main" method="post">
+                    <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-primary">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    <div th:if="${userPrincipal != null}">
+        <a th:href="@{/create_recipe(categoryFilterPar=${categoryFilterPar}, pageSize=${pageSize})}" class="btn btn-success">Rezept hinzufügen</a>
+    </div>
+</div>
+<main>
+    <div class="flex flex-wrap justify-center">
+        <h1 class="text-4xl font-bold text-center base-100 mt-12 mb-4 w-full">Willkommen auf KochChef</h1>
+
+        <div class="w-full flex justify-center mb-6">
+            <form action="/main" method="get" class="flex items-center">
+                <select name="categoryFilterPar" class="select select-accent w-full bg-gray-700 text-gray-200 ml-4" id="category" required>
+                    <option value="" disabled selected>Wähle eine Kategorie aus</option>
+                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}" th:selected="${category.id} == ${categoryFilterPar}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary ml-4">Filter anwenden</button>
+            </form>
+        </div>
+        <div class="w-full flex justify-center mb-6">
+            <form action="/main" method="get" class="flex items-center">
+                <input type="hidden" name="categoryFilterPar" value="" />
+                <button type="submit" class="text-blue-700 underline ml-4">Filter entfernen</button>
+            </form>
+        </div>
+        <th:block th:each="recipe : ${recipes}">
+            <div class="card card-compact w-96 bg-base-100 shadow-xl p-8 m-8">
+                <figure>
+                    <img th:if="${recipe.imagePath != null}" th:src="@{${recipe.imagePath}}" alt="Food" />
+                    <img th:unless="${recipe.imagePath != null}" th:src="@{/assets/essen.jpeg}" alt="Food" />
+                </figure>
+                <div class="card-body">
+                    <h2 class="card-title" th:text="${recipe.name}"></h2>
+                    <p th:text="${recipe.duration + ' Minuten'}"></p>
+                    <div class="card-actions justify-end">
+                        <a th:href="@{/recipe/{id}(id=${recipe.id}, categoryFilterPar=${categoryFilterPar}, pageSize=${pageSize})}" class="btn btn-primary">Anzeigen</a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <div class="flex justify-center mt-4">
+        <form action="#" method="get">
+            <input type="hidden" name="categoryFilterPar" th:value="${categoryFilterPar}" />
+            <button type="submit" class="btn btn-success" formaction="/load-more">Mehr Anzeigen</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

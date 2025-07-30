@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body class="bg-base-200">
+<div class="flex items-center justify-center min-h-screen">
+    <div class="card w-96 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-4">Registrierung</h1>
+            <form action="#" th:action="@{/registration}" th:object="${user}" method="post">
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Username:</span>
+                    </label>
+                    <input type="text" th:field="*{username}" class="input input-bordered" required>
+                </div>
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">E-Mail:</span>
+                    </label>
+                    <input type="email" th:field="*{email}" class="input input-bordered" required>
+                </div>
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Password:</span>
+                    </label>
+                    <input type="password" th:field="*{password}" class="input input-bordered" required>
+                </div>
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Password bestätigen:</span>
+                    </label>
+                    <input type="password" th:field="*{passwordConfirm}" class="input input-bordered" required>
+                </div>
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn btn-primary w-full">Registrieren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    window.onload = function() {
+        document.getElementById("registrationForm").onsubmit = function(event) {
+            var username = document.getElementById("username").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var passwordConfirm = document.getElementById("passwordConfirm").value;
+            var errorMessages = [];
+
+            if (username.trim() === "") {
+                errorMessages.push("Bitte geben Sie einen Benutzernamen ein.");
+            } else if (username.length < 2 || username.length > 30) {
+                errorMessages.push("Der Benutzername muss zwischen 2 und 30 Zeichen lang sein.");
+            }
+
+            if (email.trim() === "") {
+                errorMessages.push("Bitte geben Sie eine E-Mail-Adresse ein.");
+            } else if (!isValidEmail(email)) {
+                errorMessages.push("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+            }
+
+            if (password.trim() === "") {
+                errorMessages.push("Bitte geben Sie ein Passwort ein.");
+            } else if (password.length < 12 || password.length > 100) {
+                errorMessages.push("Das Passwort muss zwischen 12 und 100 Zeichen lang sein.");
+            }
+
+            if (password !== passwordConfirm) {
+                errorMessages.push("Die Passwörter stimmen nicht überein.");
+            }
+
+            if (errorMessages.length > 0) {
+                event.preventDefault();
+                alert(errorMessages.join("\n"));
+            }
+        };
+
+        function isValidEmail(email) {
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+    };
+</script>
+</html>

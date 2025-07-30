@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recipe details</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="../static/main.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .recipe-steps {
+            white-space: pre-wrap; /* Ensures text will wrap and preserve white spaces */
+            word-wrap: break-word; /* Break long words if needed */
+        }
+        ul.ingredients-list {
+            list-style-type: disc; /* Ensures list items have bullet points */
+            padding-left: 20px; /* Adds space between bullets and text */
+        }
+    </style>
+</head>
+<body class="primary-content">
+<main>
+    <div class="flex justify-center">
+        <h1 class="text-4xl font-bold text-center base-100 mt-12 mb-4 w-full" th:text="${recipe.name}"></h1>
+    </div>
+
+    <div class="flex justify-center">
+        <div class="card w-full max-w-4xl bg-base-100 shadow-xl p-8 m-8">
+            <figure>
+                <img th:if="${recipe.imagePath != null}" th:src="@{${recipe.imagePath}}" alt="Food" />
+                <img th:unless="${recipe.imagePath != null}" th:src="@{/assets/essen.jpeg}" alt="Food" />
+            </figure>
+            <div class="card-body">
+                <h2 class="card-title" th:text="${recipe.name}"></h2>
+                <p><strong>Preparation time:</strong> <span th:text="${recipe.duration + ' Minuten'}"></span></p>
+                <p><strong>Servings:</strong> <span th:text="${recipe.servings}"></span></p>
+                <p><strong>Category:</strong> <span th:text="${recipe.category.name}"></span></p>
+                <p><strong>Ingredients:</strong></p>
+                <ul class="ingredients-list">
+                    <li th:each="ingredient : ${recipe.ingredients}">
+                        <span th:text="${ingredient.quantity + ingredient.unit}"></span>
+                        <span th:text="${ingredient.ingredientName}"></span>
+                    </li>
+                </ul>
+                <p><strong>Recipe steps:</strong></p>
+                <pre class="recipe-steps" th:text="${recipe.steps}"></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-center mt-4">
+        <a th:href="@{/main(categoryFilterPar=${categoryFilterPar}, pageSize=${pageSize})}" class="btn btn-primary">Back</a>
+    </div>
+</main>
+</body>
+</html>

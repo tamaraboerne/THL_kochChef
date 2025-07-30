@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="flex p-8 bg-gray-900 text-white">
+<div class="card w-96 bg-gray-800 shadow-xl">
+    <div class="card-body">
+        <h2 class="card-title text-white">Zutaten</h2>
+        <div class="space-y-4">
+            <th:block th:each="ingredient : ${ingredients}">
+                <div class="flex items-center justify-between p-4 bg-gray-700 rounded">
+                    <span th:text="${ingredient.name}"></span>
+                    <button class="btn btn-error btn-sm">Entfernen</button>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    <div class="flex justify-center mb-2">
+        <form action="#" method="get">
+            <button type="submit" class="btn btn-accent" formaction="/adminView/load-more-ingredients">Weitere Zutaten laden</button>
+        </form>
+    </div>
+</div>
+
+<div class="card w-96 bg-gray-800 shadow-xl ml-10">
+    <div class="card-body">
+        <h2 class="card-title text-white">Kategorien</h2>
+        <div class="space-y-4">
+            <th:block th:each="category : ${categories}">
+                <div class="flex items-center justify-between p-4 bg-gray-700 rounded">
+                    <span th:text="${category.name}"></span>
+                    <button class="btn btn-error btn-sm">Entfernen</button>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    <div class="flex justify-center mb-2">
+        <form action="#" method="get">
+            <button type="submit" class="btn btn-accent" formaction="/adminView/load-more-categories">Weitere Kategorien laden</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
