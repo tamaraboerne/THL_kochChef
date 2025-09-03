@@ -1,0 +1,13 @@
+- Bei der Registrierung wurden keine Anforderungen für das Passwort angezeigt, was zu Verwirrung führte, da Fehlermeldungen bei falscher Eingabe ausblieben.
+    - Man könnte unter das Passwort Eingabefeld die Anforderungen schreiben, damit der Benutzer direkt weiß worauf er beim Passwort achten muss.
+- Einmal nach der Registrierung und dem Login war jemand immer noch nicht eingeloggt.
+- Der Button "Zutaten hinzufügen" beim Erstellen eines Rezepts war verwirrend.
+    - Man könnte den Button "Zutaten hinzufügen" unter die Zutaten machen.
+- Nach manuellem Wechsel zur Seite "Rezept erstellen" und Rückkehr zur Startseite war der Benutzer plötzlich eingeloggt.
+- Beim Hinzufügen eines Rezepts gab es keine Stückzahl als Mengeneinheit, was zu Verwirrung führte.
+    - Man könnte bei den Mengenangaben noch Stückzahl hinzufügen.
+- Im Popup wurde "Benutzername" statt "E-Mail" angezeigt, was wiederum zu Verwirrung führte.
+- Die Mindestanzahl der Wörter für Rezeptschritte wurde nicht angezeigt, was ebenfalls Verwirrung auslöste.
+    - Auch hier könnte ein kleiner Text unter dem Eingabefeld sein welcher anzeigt wie viele Wörter mindestens eingegeben werden müssen.
+- Beim Klicken auf "Rezept speichern" und der folgenden Abfrage, ob man wirklich speichern möchte, und dann "Nein" drückte, wurde das Rezept dennoch gespeichert.
+- Ansonsten lief die App wie geplant.
